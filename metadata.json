@@ -1,0 +1,76 @@
+{
+	"hosting": {
+		"feature": {
+			"dockerPort": "8080",
+			"hostPort": "50101",
+			"dockerHost": "10.101.101.170"
+		},
+		"develop": {
+			"dockerPort": "8080",
+			"hostPort": "50101",
+			"dockerHost": "10.101.101.170"
+		},
+		"release": {
+			"dockerPort": "8080",
+			"hostPort": "50101",
+			"dockerHost": "10.101.101.170"
+		},
+		"master": {
+			"dockerPort": "8080",
+			"hostPort": "50101",
+			"dockerHost": "10.101.101.170"
+		}
+	},
+  	"db-config.properties": {
+	   "feature": {
+			"DB": "mydb:3306",
+			"DBSCHEMA": "learning_dev",
+			"DBUSR": "appsupport",
+			"DBPW": "pw@123"
+		},
+	   "develop": {
+			"DB": "mydb:3306",
+			"DBSCHEMA": "learning_dev",
+			"DBUSR": "appsupport",
+			"DBPW": "pw@123"
+		},
+	   "release": {
+			"DB": "mydb:3306",
+			"DBSCHEMA": "learning_uat",
+			"DBUSR": "appsupport",
+			"DBPW": "pw@123"
+		},
+	   "master": {
+			"DB": "mydb:3306",
+			"DBSCHEMA": "learning",
+			"DBUSR": "appsupport",
+			"DBPW": "pw@123"
+		}
+	},
+	"application.properties": {
+		"feature": {
+			"USESWAGGER": true,
+			"SERVICEURL": "springboot.olb.cloud",
+          	"validationURL": "https://springboot.olb.cloud/greeting",
+			"validationSleep": "35"
+		},
+		"develop": {
+			"USESWAGGER": true,
+			"SERVICEURL": "springboot.olb.cloud",
+          	"validationURL": "https://springboot.olb.cloud/greeting",
+			"validationSleep": "35"
+		},
+		"release": {
+			"USESWAGGER": true,
+			"SERVICEURL": "springboot.olb.cloud",
+          	"validationURL": "https://springboot.olb.cloud/greeting",
+			"validationSleep": "35"
+		},
+		"master": {
+			"USESWAGGER": false,
+			"SERVICEURL": "springboot.olb.cloud",
+          	"validationURL": "https://springboot.olb.cloud/greeting",
+			"validationSleep": "35"
+		}
+	}
+}

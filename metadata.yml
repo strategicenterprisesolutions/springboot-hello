@@ -1,0 +1,42 @@
+hosting:
+  feature:
+    dockerPort: 8080
+    hostPort: 50108
+    dockerHost: 10.101.102.56
+  develop:
+    dockerPort: 8080
+    hostPort: 50108
+    dockerHost: 10.101.101.128
+  release:
+    dockerPort: 8080
+    hostPort: 50108
+    dockerHost: 10.101.103.65
+  master:
+    dockerPort: 8080
+    hostPort: 50108
+    dockerHost: 10.101.102.123
+db-config.properties:
+  feature:
+    DB: playground-db:3306
+    DBUSR: appsupport
+    DBPW: Oracle@123
+    DBSCHEMA: playground_learning_dev
+    PLAYGROUNDSERVICEURL: 3-playground.altimetrik.com
+  develop:
+    DB: playground-db:3306
+    DBUSR: appsupport
+    DBPW: Oracle@123
+    DBSCHEMA: playground_learning_dev
+    PLAYGROUNDSERVICEURL: 2-playground.altimetrik.com
+  release:
+    DB: playground-db:3306
+    DBUSR: appsupport
+    DBPW: PgUAT@123
+    DBSCHEMA: playground_learning_uat
+    PLAYGROUNDSERVICEURL: 1-playground.altimetrik.com
+  master:
+    DB: playground-db:3306
+    DBUSR: appsupport
+    DBPW: Oracle@123
+    DBSCHEMA: playground_learning
+    PLAYGROUNDSERVICEURL: playground.altimetrik.com
