@@ -50,7 +50,7 @@ pipeline{
       
 		stage('Maven build'){
           steps{
-                         sh 'mvn clean package -Dmaven.test.skip=true'
+                         sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
           }
     }
       
