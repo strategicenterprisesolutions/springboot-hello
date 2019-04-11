@@ -58,7 +58,7 @@ pipeline{
           steps{
             script{
           			sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g Dockerfile"
-                    withDockerRegistry([credentialsId: 'dockerpwd', url: "https://docker.olb.cloud/"]) {
+                    withDockerRegistry([credentialsId: 'dockerpwd', url: "http://docker.olb.cloud/"]) {
                       TAG="docker.artifactory/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
                       def image = docker.build("${TAG}", "--no-cache -f Dockerfile .")
                         stage('Push docker image'){
