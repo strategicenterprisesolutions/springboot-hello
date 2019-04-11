@@ -6,7 +6,7 @@ pipeline{
     }
 	stages{
         
-        stage('Set variables'){
+    stage('Set variables'){
           steps{
             script{
                 BRANCH = "${BRANCHES}".tokenize('/')[-1]
@@ -49,16 +49,15 @@ pipeline{
           		  sh "sed -i s/#PLAYGROUNDSERVICEURL#/${PLAYGROUNDSERVICEURL}/g ./src/test/resources/application.properties"
             }
           }
-        }
+    }
       
 		stage('Maven build'){
           steps{
                          sh 'mvn clean package -Dmaven.test.skip=true'
           }
-        }
+    }
       
-  
-  		stage('Build docker image'){
+    stage('Build docker image'){
           steps{
             script{
           			sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g Dockerfile"
@@ -71,9 +70,9 @@ pipeline{
                     }
             }
           }
-        }
+    }
   
-  		stage('Deploy docker image'){          
+  	stage('Deploy docker image'){          
           steps{
             script{
               println "ENV: ${JOBENV}"
@@ -87,9 +86,9 @@ pipeline{
                     }
             } 
           }
-        }
+    }
   
-  		stage ('Validate endpoint'){
+  	stage ('Validate endpoint'){
           steps{
             script{
               sh """sleep "${VALIDATIONSLEEP}" && curl -H "Content-Type: application/json" "${VALIDATIONURL}" """
@@ -101,6 +100,6 @@ pipeline{
             }
 
           }
-        }
-  
+    }
+  }
 }
