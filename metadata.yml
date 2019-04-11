@@ -20,7 +20,7 @@ db-config.properties:
     DB: mydb:3306
     DBUSR: appsupport
     DBPW: db@123
-    DBSCHEMA: learning_dev2
+    DBSCHEMA: learning_dev
     SERVICEURL: springboot.olb.cloud
   develop:
     DB: mydb:3306
