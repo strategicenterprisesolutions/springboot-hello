@@ -61,15 +61,13 @@ pipeline{
                       withDockerRegistry([credentialsId: 'dockerpwd', url: "http://docker.olb.cloud/"]) {
                           TAG="docker.olb.cloud/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
                           def image = docker.build("${TAG}", "--no-cache -f Dockerfile .")
+                          stage('Push docker image'){
+                            image.push "${BUILD_ID}"
+                          }
                       }
             }
           }
     }
-    
-    stage('Push docker image'){
-                            image.push "${BUILD_ID}"
-    }
-  
   
     stage('Deploy docker image'){          
           steps{
