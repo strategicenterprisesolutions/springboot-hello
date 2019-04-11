@@ -1,0 +1,24 @@
+{
+    "executionRoleArn": "arn:aws:iam::416959564364:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+        {
+            "name": "sample-website",
+            "image": "springboot-hello",
+            "essential": true,
+            "portMappings": [
+                {
+                    "hostPort": 8080,
+                    "protocol": "tcp",
+                    "containerPort": 8080
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "networkMode": "awsvpc",
+    "cpu": "256",
+    "memory": "512",
+    "family": "ecs-demo"
+}
