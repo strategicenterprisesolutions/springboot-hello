@@ -77,7 +77,7 @@ pipeline{
 						sh """
                         		docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}
                             docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true                          
-                            docker run -d --name ${JOB_BASE_NAME} --restart always --network=${NET} -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}
+                            docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}
                             docker rmi ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${OLDBUILD} || true
  						"""
                     }
