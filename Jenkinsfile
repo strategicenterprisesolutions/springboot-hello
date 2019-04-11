@@ -6,7 +6,7 @@ pipeline{
     }
 	stages{
         
-        stage('Set variables'){
+    stage('Set variables'){
           steps{
             script{
                 BRANCH = "${BRANCHES}".tokenize('/')[-1]
@@ -42,28 +42,24 @@ pipeline{
           		  sh "sed -i s/#DBSCHEMA#/${DBSCHEMA}/g ./src/main/resources/db-config.properties"
           		  sh "sed -i s/#DBUSR#/${DBUSR}/g ./src/main/resources/db-config.properties"
                 sh "set +x && sed -i s/#DBPW#/${DBPW}/g ./src/main/resources/db-config.properties"
-          		  sh "sed -i s/#PLAYGROUNDSERVICEURL#/${PLAYGROUNDSERVICEURL}/g ./src/main/resources/application.properties"
-                sh "sed -i s/#PLATFORMSERVICEURL#/${PLATFORMSERVICEURL}/g ./src/main/resources/application.properties"
                 sh "sed -i s/#USESWAGGER#/${USESWAGGER}/g ./src/main/resources/application.properties"
                 sh "sed -i s/#SIGNUPAUTH#/${SIGNUPAUTH}/g ./src/main/resources/application.properties"
-          		  sh "sed -i s/#PLAYGROUNDSERVICEURL#/${PLAYGROUNDSERVICEURL}/g ./src/test/resources/application.properties"
             }
           }
-        }
+    }
       
 		stage('Maven build'){
           steps{
-                         sh 'mvn clean package -Dmaven.test.skip=true'
+                         sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
           }
-        }
+    }
       
-  
-  		stage('Build docker image'){
+    stage('Build docker image'){
           steps{
             script{
           			sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g Dockerfile"
-                    withDockerRegistry([credentialsId: 'dockerpwd', url: "https://docker.olb.cloud/"]) {
-                      TAG="docker.artifactory/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
+                    withDockerRegistry([credentialsId: 'dockerpwd', url: "http://docker.olb.cloud/"]) {
+                      TAG="docker.olb.cloud/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
                       def image = docker.build("${TAG}", "--no-cache -f Dockerfile .")
                         stage('Push docker image'){
                             image.push "${BUILD_ID}"
@@ -71,25 +67,25 @@ pipeline{
                     }
             }
           }
-        }
+    }
   
-  		stage('Deploy docker image'){          
+  	stage('Deploy docker image'){          
           steps{
             script{
               println "ENV: ${JOBENV}"
         			withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerpwd', usernameVariable: '_DOCKERUSER', passwordVariable: '_DOCKERPWD']]) {
 						sh """
-                        		ssh centos@${DOCKERHOST} "docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
-                                ssh centos@${DOCKERHOST} "docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true"                               
-                                ssh centos@${DOCKERHOST} "docker run -d --name ${JOB_BASE_NAME} --restart always --network=${NET} -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
-                                ssh centos@${DOCKERHOST} "docker rmi ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${OLDBUILD} || true"
+                        		docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}
+                            docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true                          
+                            docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}
+                            docker rmi ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${OLDBUILD} || true
  						"""
                     }
             } 
           }
-        }
+    }
   
-  		stage ('Validate endpoint'){
+  	stage ('Validate endpoint'){
           steps{
             script{
               sh """sleep "${VALIDATIONSLEEP}" && curl -H "Content-Type: application/json" "${VALIDATIONURL}" """
@@ -101,6 +97,6 @@ pipeline{
             }
 
           }
-        }
-  
+    }
+  }
 }
