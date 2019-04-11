@@ -1,0 +1,127 @@
+pipeline{
+	agent any
+  	environment{
+      				BRANCHES = "${env.GIT_BRANCH}"
+      				COMMIT = "${env.GIT_COMMIT}"
+    }
+	stages{
+        
+        stage('Set variables'){
+          steps{
+            script{
+                BRANCH = "${BRANCHES}".tokenize('/')[-1]
+  				def data = readJSON file:'metadata.json'
+              	DOCKERHOST = """${data.hosting."${BRANCH}".dockerHost}"""
+            	DOCKERPORT = """${data.hosting."${BRANCH}".dockerPort}"""
+            	HOSTPORT = """${data.hosting."${BRANCH}".hostPort}"""
+            	DOCKERREPO = "docker.artifactory"
+                VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
+                VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
+              	DB = """${data.'db-config.properties'."${BRANCH}".DB}"""
+          		DBSCHEMA = """${data."db-config.properties"."${BRANCH}".DBSCHEMA}"""
+          		DBUSR = """${data."db-config.properties"."${BRANCH}".DBUSR}"""
+          		DBPW = """${data."db-config.properties"."${BRANCH}".DBPW}"""
+              DBCONNECTIONLIMIT = """${data."db-config.properties"."${BRANCH}".DBCONNECTIONLIMIT}"""
+          		PLAYGROUNDSERVICEURL = """${data."application.properties"."${BRANCH}".PLAYGROUNDSERVICEURL}"""
+              PLATFORMSERVICEURL = """${data."application.properties"."${BRANCH}".PLATFORMSERVICEURL}"""
+              def (NS,ENV2,JOB) = "${JOB_NAME}".tokenize( '/' )
+				def (NET1,B1,B2) = "${NS}".tokenize( '.' )
+                JOBENV = "${ENV2}"
+            	NET = "${NET1}"
+				ORG = "${NET}-${JOBENV}"
+            	OLDBUILD = (BUILD_ID as int) - 1
+            	
+          		sh "sed -i s/#DB#/${DB}/g ./config/db-config.json"
+          		sh "sed -i s/#DBSCHEMA#/${DBSCHEMA}/g ./config/db-config.json"
+          		sh "sed -i s/#DBUSR#/${DBUSR}/g ./config/db-config.json"
+          		sh "set +x && sed -i s/#DBPW#/${DBPW}/g ./config/db-config.json"
+          		sh "set +x && sed -i s/#DBCONNECTIONLIMIT#/${DBCONNECTIONLIMIT}/g ./config/db-config.json"
+          		sh "sed -i s/#PLAYGROUNDSERVICEURL#/${PLAYGROUNDSERVICEURL}/g ./config/app-config.json"
+          		sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g ./config/app-config.json"
+              sh "sed -i s/#PLATFORMSERVICEURL#/${PLATFORMSERVICEURL}/g ./config/app-config.json"
+            }
+          }
+        }
+      
+        stage('Sonarqube'){
+          steps{
+          	script{
+          			def scannerHome = tool 'sonarqube'
+                	withSonarQubeEnv('sonarqube_local') {
+                    	sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${JOB_BASE_NAME} -Dsonar.sources='.' -Dsonar.java.binaries='.' -Dsonar.exclusions='target/**/*' -Dsonar.projectVersion=${JOBENV}.${BUILD_ID} -Dsonar.branch=${BRANCH} "
+                	}
+            }
+          }
+        }
+  
+  		stage('Build docker image'){
+          steps{
+            script{
+          			sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g Dockerfile"
+                    withDockerRegistry([credentialsId: 'dockeraws_pw', url: "http://docker.artifactory/"]) {
+                      TAG="docker.artifactory/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
+                      def image = docker.build("${TAG}", "--no-cache -f Dockerfile .")
+                        stage('Push docker image'){
+                            image.push "${BUILD_ID}"
+                        }
+                    }
+            }
+          }
+        }
+  
+  		stage('Deploy docker image'){          
+          steps{
+            script{
+              println "ENV: ${JOBENV}"
+              if (("${JOBENV}" == "3dash") || ("${JOBENV}" == "prod")) {
+        			withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockeraws_pw', usernameVariable: '_DOCKERUSER', passwordVariable: '_DOCKERPWD']]) {
+						sh """
+                        		ssh centos@${DOCKERHOST} "docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
+                                ssh centos@${DOCKERHOST} "docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true"                               
+                                ssh centos@${DOCKERHOST} "docker run -d --name ${JOB_BASE_NAME} --restart always --network=${NET} -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
+                                ssh centos@${DOCKERHOST} "docker rmi ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${OLDBUILD} || true"
+ 						"""
+                    }
+                } else {
+        			withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockeraws_pw', usernameVariable: '_DOCKERUSER', passwordVariable: '_DOCKERPWD']]) {
+                  		sh """
+                        		ssh centos@${DOCKERHOST} "docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
+                                ssh centos@${DOCKERHOST} "docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true"                               
+                                ssh centos@${DOCKERHOST} "docker run -d --name ${JOB_BASE_NAME} --restart always --link playground-db:playground-db --link playground-cache:playground-cache -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"                                                                
+                                ssh centos@${DOCKERHOST} "docker rmi ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${OLDBUILD} || true"
+                        """
+                    }
+              }
+            } 
+          }
+        }
+  
+  		stage ('Validate endpoint'){
+          steps{
+            script{
+              sh """sleep "${VALIDATIONSLEEP}" && curl -H "Content-Type: application/json" "${VALIDATIONURL}" """
+              def connection = new URL("${VALIDATIONURL}").openConnection() as HttpURLConnection
+				connection.setRequestProperty( 'User-Agent', 'groovy-2.4.4' )
+				connection.setRequestProperty( 'Content-Type', 'application/json' )
+				RESULT = connection.inputStream.text
+                //if $RESULT
+            }
+
+          }
+        }
+  
+  		stage('Send results to Slack'){
+          steps{
+            slackSend (color: '#439FE0', message: "'${env.JOB_NAME}' #'${env.BUILD_ID}' '${COMMIT}' ",channel: '#pg-svcs')
+          }
+        }
+	}
+  post { 
+      always { 
+          script {
+              currentBuild.result = currentBuild.result ?: 'SUCCESS'
+              notifyBitbucket()
+          }
+      }
+  }
+}
