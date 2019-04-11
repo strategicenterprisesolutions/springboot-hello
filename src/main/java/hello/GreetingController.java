@@ -12,7 +12,7 @@ public class GreetingController {
     private final AtomicLong counter = new AtomicLong();
 
     @RequestMapping("/greeting")
-    public Greeting greeting(@RequestParam(value="name", defaultValue="GE Aviation!") String name) {
+    public Greeting greeting(@RequestParam(value="name", defaultValue="world") String name) {
         return new Greeting(counter.incrementAndGet(),
                             String.format(template, name));
     }
