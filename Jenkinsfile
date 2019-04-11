@@ -42,7 +42,6 @@ pipeline{
           		  sh "sed -i s/#DBSCHEMA#/${DBSCHEMA}/g ./src/main/resources/db-config.properties"
           		  sh "sed -i s/#DBUSR#/${DBUSR}/g ./src/main/resources/db-config.properties"
                 sh "set +x && sed -i s/#DBPW#/${DBPW}/g ./src/main/resources/db-config.properties"
-          		  sh "sed -i s/#SERVICEURL#/${SERVICEURL}/g ./src/main/resources/application.properties"
                 sh "sed -i s/#USESWAGGER#/${USESWAGGER}/g ./src/main/resources/application.properties"
                 sh "sed -i s/#SIGNUPAUTH#/${SIGNUPAUTH}/g ./src/main/resources/application.properties"
             }
