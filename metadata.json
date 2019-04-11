@@ -52,25 +52,25 @@
 			"USESWAGGER": true,
 			"SERVICEURL": "springboot.olb.cloud",
           	"validationURL": "https://springboot.olb.cloud/greeting",
-			"validationSleep": "35"
+			"validationSleep": "15"
 		},
 		"develop": {
 			"USESWAGGER": true,
 			"SERVICEURL": "springboot.olb.cloud",
           	"validationURL": "https://springboot.olb.cloud/greeting",
-			"validationSleep": "35"
+			"validationSleep": "15"
 		},
 		"release": {
 			"USESWAGGER": true,
 			"SERVICEURL": "springboot.olb.cloud",
           	"validationURL": "https://springboot.olb.cloud/greeting",
-			"validationSleep": "35"
+			"validationSleep": "15"
 		},
 		"master": {
 			"USESWAGGER": false,
 			"SERVICEURL": "springboot.olb.cloud",
           	"validationURL": "https://springboot.olb.cloud/greeting",
-			"validationSleep": "35"
+			"validationSleep": "15"
 		}
 	}
 }
