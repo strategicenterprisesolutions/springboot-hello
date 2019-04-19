@@ -14,7 +14,7 @@ pipeline{
                 DOCKERHOST = """${data.hosting."${BRANCH}".dockerHost}"""
                 DOCKERPORT = """${data.hosting."${BRANCH}".dockerPort}"""
                 HOSTPORT = """${data.hosting."${BRANCH}".hostPort}"""
-                DOCKERREPO = "docker.olb.cloud"
+                DOCKERREPO = "my.dreamcloud.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
                 DB = """${data.'db-config.properties'."${BRANCH}".DB}"""
@@ -58,8 +58,8 @@ pipeline{
           steps{
             script{
                       sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g Dockerfile"
-                      withDockerRegistry([credentialsId: 'dockerpwd', url: "http://my.dreamflight.cloud/"]) {
-                          TAG="my.dreamflight.cloud/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
+                withDockerRegistry([credentialsId: 'dockerpwd', url: "http://${DOCKERREPO}/"]) {
+                    TAG="${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
                           def image = docker.build("${TAG}", "--no-cache -f Dockerfile .")
                           stage('Push docker image'){
                             image.push "${BUILD_ID}"
