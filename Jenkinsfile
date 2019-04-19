@@ -57,14 +57,15 @@ pipeline{
     stage('Build docker image'){
           steps{
             script{
-                      sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g Dockerfile"
-                withDockerRegistry([credentialsId: 'dockerpwd', url: "http://${DOCKERREPO}/"]) {
-                    TAG="${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
-                          def image = docker.build("${TAG}", "--no-cache -f Dockerfile .")
-                          stage('Push docker image'){
-                            image.push "${BUILD_ID}"
-                          }
-                      }
+                    sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g Dockerfile"
+                    withDockerRegistry([credentialsId: 'dockerpwd', url: "http://${DOCKERREPO}/"]) {
+                            TAG="${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}"
+                            def image = docker.build("${TAG}", "--no-cache -f Dockerfile .")
+                            stage('Push docker image'){
+                                image.push "${BUILD_ID}"
+                            }
+                    }
+                sh "docker rmi ${TAG}"
             }
           }
     }
