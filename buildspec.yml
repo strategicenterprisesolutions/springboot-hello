@@ -4,7 +4,7 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - docker login -u admin -p Password1 docker.olb.cloud
+      - docker login -u admin -p Password1 docker.my.url
   build:
     commands:
       - echo Build started on `date`
