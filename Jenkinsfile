@@ -14,7 +14,7 @@ pipeline{
                 DOCKERHOST = """${data.hosting."${BRANCH}".dockerHost}"""
                 DOCKERPORT = """${data.hosting."${BRANCH}".dockerPort}"""
                 HOSTPORT = """${data.hosting."${BRANCH}".hostPort}"""
-                DOCKERREPO = "my.dreamcloud.cloud"
+                DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
                 DB = """${data.'db-config.properties'."${BRANCH}".DB}"""
