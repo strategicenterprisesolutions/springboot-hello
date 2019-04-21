@@ -53,7 +53,18 @@ pipeline{
                         sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
           }
     }
-      
+        
+    stage('Sonarqube'){
+          steps{
+          	script{
+          			def scannerHome = tool 'sonarqube'
+                	withSonarQubeEnv('sonarqube') {
+                    	sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${JOB_BASE_NAME} -Dsonar.sources='.' -Dsonar.java.binaries='.' -Dsonar.exclusions='target/**/*' -Dsonar.projectVersion=${JOBENV}.${BUILD_ID} -Dsonar.branch=${BRANCH} "
+                	}
+           }
+         }
+    }
+        
     stage('Build docker image'){
           steps{
             script{
