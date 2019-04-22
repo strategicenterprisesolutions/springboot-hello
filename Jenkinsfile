@@ -50,7 +50,13 @@ pipeline{
       
     stage('Maven build'){
           steps{
-                        sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
+                    //sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
+                    server = Artifactory.server 'artifactory' 
+                    rtMaven = Artifactory.newMavenBuild() 
+                    rtMaven.tool = 'maven-3.3.9'
+                    rtMaven.deployer (id: "MAVEN_DEPLOYER", releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server)
+                    rtMaven.resolver (id: "MAVEN_RESOLVER", releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server)
+                    rtMaven.deployer.deployArtifacts = true
           }
     }
         
@@ -81,10 +87,12 @@ pipeline{
           }
     }
   
-    stage('Validate docker image'){
-        steps{ xrayScanBuild(xrayScanConfig:['buildName': "${JOB_BASE_NAME}", 'buildNumber': "${BUILD_ID}", 'failBuild': false ], server: "artifactory") 
-        }
-    }        
+    //stage('Validate docker image'){
+    //    steps{ 
+    //            def scanConfig = ['buildName': "${JOB_BASE_NAME}", 'buildNumber': "${BUILD_ID}", 'failBuild': false]
+    //            def scanResult = server.xrayScan scanConfig
+    //    }
+    //}        
     stage('Deploy docker image'){          
           steps{
             script{
