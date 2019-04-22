@@ -50,6 +50,7 @@ pipeline{
       
     stage('Maven build'){
           steps{
+              script{
                     //sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
                     server = Artifactory.server 'artifactory' 
                     rtMaven = Artifactory.newMavenBuild() 
@@ -57,6 +58,7 @@ pipeline{
                     rtMaven.deployer (id: "MAVEN_DEPLOYER", releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server)
                     rtMaven.resolver (id: "MAVEN_RESOLVER", releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server)
                     rtMaven.deployer.deployArtifacts = true
+              }
           }
     }
         
