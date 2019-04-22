@@ -56,7 +56,7 @@ pipeline{
                     def rtMaven = Artifactory.newMavenBuild()
                     rtMaven.resolver server: server, releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot'
                     rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
-                    rtMaven.deployer.artifactDeploymentPatterns.addInclude("target/*.jar")
+                    rtMaven.deployer.artifactDeploymentPatterns.addInclude("**/*.jar")
                     rtMaven.deployer.deployArtifacts = true
                     rtMaven.tool = 'maven-3.3.9'
                     rtMaven.opts = '-Xms1024m -Xmx4096m'
