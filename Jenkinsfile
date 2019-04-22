@@ -53,7 +53,7 @@ pipeline{
               script{
                     sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
                     def server = Artifactory.server 'artifactory'
-                    //server = Artifactory.server 'artifactory' 
+                    def rtMaven = Artifactory.newMavenBuild()
                     //rtMaven = Artifactory.newMavenBuild() 
                     //rtMaven.tool = 'maven-3.3.9'
                     //rtMaven.deployer (releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', deployArtifacts = true, server: server)
