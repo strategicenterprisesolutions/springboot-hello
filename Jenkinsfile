@@ -61,7 +61,7 @@ pipeline{
                     rtMaven.tool = 'maven-3.3.9'
                     rtMaven.opts = '-Xms1024m -Xmx4096m'
                     //env.JAVA_HOME = 'path to JDK'
-                    def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean package'
+                    def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean package -Dmaven.test.skip=true'
                     server.publishBuildInfo buildInfo
               }
           }
