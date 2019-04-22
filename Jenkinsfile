@@ -97,6 +97,7 @@ pipeline{
     stage('Validate docker image'){
         steps{
             script{
+                    def server = Artifactory.server 'artifactory'
                     def scanConfig = ['buildName': "${JOB_BASE_NAME}", 'buildNumber': "${BUILD_ID}", 'failBuild': false]
                     def scanResult = server.xrayScan scanConfig
             }
