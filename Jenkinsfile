@@ -51,13 +51,12 @@ pipeline{
     stage('Maven build'){
           steps{
               script{
-                    //sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
-                    server = Artifactory.server 'artifactory' 
-                    rtMaven = Artifactory.newMavenBuild() 
-                    rtMaven.tool = 'maven-3.3.9'
-                    rtMaven.deployer (releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', deployArtifacts = true, server: server)
-                    rtMaven.resolver (releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server)
-                    //rtMaven.deployer.deployArtifacts = true
+                    sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
+                    //server = Artifactory.server 'artifactory' 
+                    //rtMaven = Artifactory.newMavenBuild() 
+                    //rtMaven.tool = 'maven-3.3.9'
+                    //rtMaven.deployer (releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', deployArtifacts = true, server: server)
+                    //rtMaven.resolver (releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server)
               }
           }
     }
