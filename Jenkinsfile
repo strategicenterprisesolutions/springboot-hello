@@ -55,9 +55,9 @@ pipeline{
                     server = Artifactory.server 'artifactory' 
                     rtMaven = Artifactory.newMavenBuild() 
                     rtMaven.tool = 'maven-3.3.9'
-                    rtMaven.deployer (id: "MAVEN_DEPLOYER", releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', server: server)
-                    rtMaven.resolver (id: "MAVEN_RESOLVER", releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server)
-                    rtMaven.deployer.deployArtifacts = true
+                    rtMaven.deployer (releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', deployArtifacts = true, server: server)
+                    rtMaven.resolver (releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server)
+                    //rtMaven.deployer.deployArtifacts = true
               }
           }
     }
