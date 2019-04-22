@@ -65,7 +65,7 @@ pipeline{
                     server.publishBuildInfo buildInfo
                     def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
                     def scanResult = server.xrayScan scanConfig
-                    echo xrayResults as String
+                    echo scanResult as String
               }
           }
     }
