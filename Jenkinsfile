@@ -63,6 +63,9 @@ pipeline{
                     //env.JAVA_HOME = 'path to JDK'
                     def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean package -Dmaven.test.skip=true'
                     server.publishBuildInfo buildInfo
+                    def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
+                    def scanResult = server.xrayScan scanConfig
+                    echo xrayResults as String
               }
           }
     }
@@ -94,15 +97,15 @@ pipeline{
           }
     }
   
-    stage('Validate docker image'){
-        steps{
-            script{
-                    def server = Artifactory.server 'artifactory'
-                    def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
-                    def scanResult = server.xrayScan scanConfig
-            }
-        }
-    } 
+    //stage('Validate docker image'){
+    //    steps{
+    //        script{
+    //                def server = Artifactory.server 'artifactory'
+    //                def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
+    //                def scanResult = server.xrayScan scanConfig
+    //        }
+    //    }
+    // } 
 
     stage('Deploy docker image'){          
           steps{
