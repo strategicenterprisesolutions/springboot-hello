@@ -51,13 +51,18 @@ pipeline{
     stage('Maven build'){
           steps{
               script{
-                    sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
+                    //sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
                     def server = Artifactory.server 'artifactory'
                     def rtMaven = Artifactory.newMavenBuild()
-                    //rtMaven = Artifactory.newMavenBuild() 
-                    //rtMaven.tool = 'maven-3.3.9'
-                    //rtMaven.deployer (releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local', deployArtifacts = true, server: server)
-                    //rtMaven.resolver (releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot', server: server)
+                    rtMaven.resolver server: server, releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot'
+                    rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
+                    rtMaven.deployer.artifactDeploymentPatterns.addInclude("target/*.jar")
+                    rtMaven.deployer.deployArtifacts = true
+                    rtMaven.tool = 'maven-3.3.9'
+                    rtMaven.opts = '-Xms1024m -Xmx4096m'
+                    //env.JAVA_HOME = 'path to JDK'
+                    def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean package'
+                    server.publishBuildInfo buildInfo
               }
           }
     }
