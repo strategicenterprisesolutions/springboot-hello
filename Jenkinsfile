@@ -81,6 +81,10 @@ pipeline{
           }
     }
   
+    stage('Validate docker image'){
+        steps{ xrayScanBuild(xrayScanConfig:['buildName': artifactoryBuildInfo.name, 'buildNumber': artifactoryBuildInfo.number, 'failBuild': false ], server: artifactoryServer) 
+        }
+    }        
     stage('Deploy docker image'){          
           steps{
             script{
