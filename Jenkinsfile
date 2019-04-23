@@ -111,6 +111,7 @@ pipeline{
                         sh "sed -i s/#HOSTPORT#/${DOCKERPORT}/g ${env.TASK_DEFINITION}"
                         sh "sed -i s_#DOCKERIMAGEURI#_${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}_ ${env.TASK_DEFINITION}"
                         sh "cat ${env.TASK_DEFINITION}"
+                        sh "cp ${env.TASK_DEFINITION} fargate.json"
                     }
             }
         }
@@ -123,9 +124,16 @@ pipeline{
               withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerpwd', usernameVariable: '_DOCKERUSER', passwordVariable: '_DOCKERPWD']]) {
               sh """
                             docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
-                                docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true                          
-                                docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
-                                docker rmi ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${OLDBUILD} || true
+                            docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true                          
+                            docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
+                            docker rmi ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${OLDBUILD} || true
+                            
+                            taskdef=$(aws ecs register-task-definition --cli-input-json file://${WORKSPACE}/fargate.json)
+                            taskname=$(echo $taskdef | jq -r .taskDefinition.family)
+                            taskrevision=$(echo $taskdef | jq .taskDefinition.revision)
+
+                            servicedef=$(aws ecs create-service --cluster fargate-geaviation --service-name ${taskname}-service --task-definition "$taskname:$taskrevision" --desired-count 3 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-05843a532c2fb750f,subnet-0a40f91ea5dbdc990,subnet-0a9098260113ad98e],securityGroups=[sg-0329297695727eb33]}")
+                                
               """
                         }
             } 
