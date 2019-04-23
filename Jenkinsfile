@@ -17,7 +17,7 @@ pipeline{
                 CPU = """${data.hosting."${BRANCH}".cpu}"""
                 MEMORY = """${data.hosting."${BRANCH}".memory}"""
                 INSTANCECOUNT = """${data.hosting."${BRANCH}".instanceCount}"""
-                TARGETGROUPARN = """${data.hosting."${BRANCH}".targateGroupArn}"""
+                TARGETGROUPARN = """${data.hosting."${BRANCH}".targetGroupArn}"""
                 DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
