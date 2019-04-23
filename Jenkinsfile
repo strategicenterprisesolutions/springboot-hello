@@ -140,8 +140,9 @@ pipeline{
                                             script: 'aws ecs register-task-definition --cli-input-json file://./fargate.json',
                                             returnStdout: true
                   ).trim()
-                  echo "Task: ${REGISTER_TASK}"
-                  
+                  sh """
+                        cat ${REGISTER_TASK} | jq -r .taskDefinition.revision
+                  """
               }
           }
     }
