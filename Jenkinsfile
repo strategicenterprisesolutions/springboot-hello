@@ -102,7 +102,7 @@ pipeline{
             script{
                     println "ENV: ${JOBENV}"
                     configFileProvider([configFile(fileId: 'ECS-TaskDefinition', variable: 'TASK_DEFINITION')]) {
-                        sh 'cat $TASK_DEFINITION'
+                        sh "cat ${env.TASK_DEFINITION}"
                     }
                 
                     //{
