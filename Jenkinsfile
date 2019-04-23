@@ -51,6 +51,7 @@ pipeline{
                     CLUSTER = "${CLUSTER}"
                     SUBNETS = "${SUBNETS}"
                     SECURITYGROUPS = "${SECURITYGROUPS}"
+                    INSTANCECOUNT = "${INSTANCECOUNT}"
                 }
                 
             }
@@ -153,7 +154,7 @@ pipeline{
                         println SUBNETS
                         println SECURITYGROUPS
                         sh """
-                           aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count 3 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-05843a532c2fb750f,subnet-0a40f91ea5dbdc990,subnet-0a9098260113ad98e],securityGroups=[sg-0329297695727eb33]}" > servicedef.json
+                           aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" > servicedef.json
                         """
                         def serviceDef = readJSON file:'servicedef.json'
               }
