@@ -136,11 +136,11 @@ pipeline{
     stage ('Deploy to ECS'){
           steps{
               script{
-                            TASKDEF = sh (
-                                    script: 'aws ecs register-task-definition --cli-input-json file://./fargate.json',
-                                    returnStdout: true
-                            )
-                  sh """echo ${TASKDEF}"""
+                    sh """
+                       aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json
+                       cat registertask.json
+                       //aws ecs describe-task-definition --task-definition testpipeline | jq -r .taskDefinition.revision
+                    """
               }
           }
     }
