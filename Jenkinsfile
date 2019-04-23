@@ -53,7 +53,6 @@ pipeline{
                     SUBNETS = "${SUBNETS}"
                     SECURITYGROUPS = "${SECURITYGROUPS}"
                 }
-                
             }
           }
     }
@@ -120,7 +119,6 @@ pipeline{
                         sh "sed -i s_#DOCKERIMAGEURI#_${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}_ ${env.TASK_DEFINITION}"
                         sh "sed -i s/#ACCOUNTID#/${ACCOUNTID}/g ${env.TASK_DEFINITION}"
                         sh "cp ${env.TASK_DEFINITION} fargate.json"
-                        sh "cat fargate.json"
                     }
             }
         }
