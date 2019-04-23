@@ -141,7 +141,7 @@ pipeline{
                                             returnStdout: true
                   ).trim()
                   sh """
-                        cat ${REGISTER_TASK} | jq -r .taskDefinition.revision
+                        echo ${REGISTER_TASK} | jq -r .taskDefinition.revision
                   """
               }
           }
