@@ -97,15 +97,31 @@ pipeline{
           }
     }
   
-    //stage('Validate docker image'){
-    //    steps{
-    //        script{
-    //                def server = Artifactory.server 'artifactory'
-    //                def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
-    //                def scanResult = server.xrayScan scanConfig
-    //        }
-    //    }
-    // } 
+    stage('Construct ECS task definition'){
+        steps{
+            script{
+                    println "ENV: ${JOBENV}"
+                    //{
+                        //"executionRoleArn": "arn:aws:iam::##account_ID##:role/ecsTaskExecutionRole",
+                        //"containerDefinitions": [{
+                            //"name": "${JOB_BASE_NAME}",
+                            //"image": "##ECR-REPOSITORY-URI##",
+                            //"essential": true,
+                            //"portMappings": [{
+                                            //"hostPort": ${HOSTPORT},
+                                            //"protocol": "tcp",
+                                            //"containerPort": ${DOCKERPORT}
+                            //}]
+                        //}],
+                        //"requiresCompatibilities": ["FARGATE"],
+                        //"networkMode": "awsvpc",
+                        //"cpu": "256",
+                        //"memory": "512",
+                        //"family": "${JOB_BASE_NAME}"
+                    //}
+            }
+        }
+    } 
 
     stage('Deploy docker image'){          
           steps{
