@@ -140,7 +140,7 @@ pipeline{
                                     script: 'aws ecs register-task-definition --cli-input-json file://./fargate.json',
                                     returnStdout: true
                             )
-                       sh "env"
+                  sh "echo ${env.TASKDEF}"
               }
           }
     }
