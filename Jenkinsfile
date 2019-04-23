@@ -133,7 +133,7 @@ pipeline{
           }
     }
   
-    stage ('Validate endpoint'){
+    stage ('Deploy to ECS'){
           steps{
             script{
                     sh """
