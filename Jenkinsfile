@@ -46,6 +46,11 @@ pipeline{
                 sh "set +x && sed -i s/#DBPW#/${DBPW}/g ./src/main/resources/db-config.properties"
                 sh "sed -i s/#USESWAGGER#/${USESWAGGER}/g ./src/main/resources/application.properties"
                 sh "sed -i s/#SIGNUPAUTH#/${SIGNUPAUTH}/g ./src/main/resources/application.properties"
+                
+                withAWSParameterStore(credentialsId: 'awscreds', naming: 'relative', path: '/jenkins/fargate/', recursive: true, regionName: 'us-east-1') {
+                        sh "echo $ACCOUNTID"
+                }
+                
             }
           }
     }
@@ -141,7 +146,7 @@ pipeline{
                                             returnStdout: true
                   ).trim()
                   sh """
-                        echo ${REGISTER_TASK} | jq -r .taskDefinition.revision
+                        echo "$REGISTER_TASK" | jq -r .taskDefinition.revision
                   """
               }
           }
