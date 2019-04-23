@@ -144,13 +144,9 @@ pipeline{
                         sh "aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json"
                         def registerTask = readJSON file:'registertask.json'
                         TASKREVISION = """${registerTask.taskDefinition.revision}"""
-                        println TASKREVISION
-                  
-                  //REGISTER_TASK = sh (
-                  //                          script: 'aws ecs register-task-definition --cli-input-json file://./fargate.json',
-                  //                          returnStdout: true
-                  //).trim()
-                  
+                        TASKFAMILY = """${registerTask.taskDefinition.family}"""
+                        println registerTask
+                        println TASKREVISION   
               }
           }
     }
