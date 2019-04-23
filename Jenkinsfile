@@ -113,10 +113,10 @@ pipeline{
               println "ENV: ${JOBENV}"
               withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerpwd', usernameVariable: '_DOCKERUSER', passwordVariable: '_DOCKERPWD']]) {
               sh """
-                            docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}
+                            docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
                                 docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true                          
-                                docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${BUILD_ID}
-                                docker rmi ${DOCKERREPO}/${ORG}/${JOB_BASE_NAME}:${OLDBUILD} || true
+                                docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
+                                docker rmi ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${OLDBUILD} || true
               """
                         }
             } 
