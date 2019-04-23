@@ -3,22 +3,30 @@
 		"feature": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170"
+			"dockerHost": "10.101.101.170",
+			"cpu": "512",
+			"memory": "1024"
 		},
 		"develop": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170"
+			"dockerHost": "10.101.101.170",
+			"cpu": "512",
+			"memory": "1024"
 		},
 		"release": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170"
+			"dockerHost": "10.101.101.170",
+			"cpu": "512",
+			"memory": "1024"
 		},
 		"master": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170"
+			"dockerHost": "10.101.101.170",
+			"cpu": "512",
+			"memory": "1024"
 		}
 	},
   	"db-config.properties": {
