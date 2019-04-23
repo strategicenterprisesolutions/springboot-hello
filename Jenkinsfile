@@ -16,6 +16,7 @@ pipeline{
                 HOSTPORT = """${data.hosting."${BRANCH}".hostPort}"""
                 CPU = """${data.hosting."${BRANCH}".cpu}"""
                 MEMORY = """${data.hosting."${BRANCH}".memory}"""
+                INSTANCECOUNT = """${data.hosting."${BRANCH}".instanceCount}"""
                 DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
@@ -51,7 +52,6 @@ pipeline{
                     CLUSTER = "${CLUSTER}"
                     SUBNETS = "${SUBNETS}"
                     SECURITYGROUPS = "${SECURITYGROUPS}"
-                    INSTANCECOUNT = "${INSTANCECOUNT}"
                 }
                 
             }
