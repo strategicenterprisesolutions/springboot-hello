@@ -14,6 +14,8 @@ pipeline{
                 DOCKERHOST = """${data.hosting."${BRANCH}".dockerHost}"""
                 DOCKERPORT = """${data.hosting."${BRANCH}".dockerPort}"""
                 HOSTPORT = """${data.hosting."${BRANCH}".hostPort}"""
+                CPU = """${data.hosting."${BRANCH}".cpu}"""
+                MEMORY = """${data.hosting."${BRANCH}".memory}"""
                 DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
@@ -103,28 +105,13 @@ pipeline{
                     println "ENV: ${JOBENV}"
                     wrap([$class: 'ConfigFileBuildWrapper', managedFiles: [[fileId: 'd38018d9-0e8b-440d-8f9d-478b2cf5d2e1', targetLocation: '', variable: 'TASK_DEFINITION']]]) {
                         sh "sed -i s/#JOB_BASE_NAME#/${JOB_BASE_NAME}/g ${env.TASK_DEFINITION}"
+                        sh "sed -i s/#CPU#/${CPU}/g ${env.TASK_DEFINITION}"
+                        sh "sed -i s/#MEMORY#/${MEMORY}/g ${env.TASK_DEFINITION}"
+                        sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g ${env.TASK_DEFINITION}"
+                        sh "sed -i s/#HOSTPORT#/${DOCKERPORT}/g ${env.TASK_DEFINITION}"
                         sh "sed -i s_#DOCKERIMAGEURI#_${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}_ ${env.TASK_DEFINITION}"
                         sh "cat ${env.TASK_DEFINITION}"
                     }
-                
-                    //{
-                        //"executionRoleArn": "arn:aws:iam::##account_ID##:role/ecsTaskExecutionRole",
-                        //"containerDefinitions": [{
-                            //"name": "${JOB_BASE_NAME}",
-                            //"image": "##ECR-REPOSITORY-URI##",
-                            //"essential": true,
-                            //"portMappings": [{
-                                            //"hostPort": ${HOSTPORT},
-                                            //"protocol": "tcp",
-                                            //"containerPort": ${DOCKERPORT}
-                            //}]
-                        //}],
-                        //"requiresCompatibilities": ["FARGATE"],
-                        //"networkMode": "awsvpc",
-                        //"cpu": "256",
-                        //"memory": "512",
-                        //"family": "${JOB_BASE_NAME}"
-                    //}
             }
         }
     } 
