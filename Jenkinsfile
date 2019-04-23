@@ -138,8 +138,7 @@ pipeline{
               script{
                     sh """
                        aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json
-                       cat registertask.json
-                       //aws ecs describe-task-definition --task-definition testpipeline | jq -r .taskDefinition.revision
+                       cat registertask.json | jq -r .taskDefinition.revision
                     """
               }
           }
