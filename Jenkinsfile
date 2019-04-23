@@ -137,11 +137,11 @@ pipeline{
                         SERVICESTATUS = """${serviceStatus.services.status}"""
                         println SERVICESTATUS
                         if ("${SERVICESTATUS}" == "[ACTIVE]") {
-                            sh """aws ecs update-service --cluster ${CLUSTER} --service ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" > servicedef.json"""
+                            sh """set +x && aws ecs update-service --cluster ${CLUSTER} --service ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" > servicedef.json"""
                         } else {
                             sh """aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" --load-balancers targetGroupArn=${TARGETGROUPARN},containerName=${JOB_BASE_NAME},containerPort=${DOCKERPORT} > servicedef.json"""
                             println "Waiting for new Service to instantiate..."
-                            VALIDATIONSLEEP = (VALIDATIONSLEEP as int) + 120
+                            VALIDATIONSLEEP = (VALIDATIONSLEEP as int) + 100
                         }
                         def serviceDef = readJSON file:'servicedef.json'
               }
