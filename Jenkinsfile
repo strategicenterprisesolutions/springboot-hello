@@ -17,6 +17,7 @@ pipeline{
                 CPU = """${data.hosting."${BRANCH}".cpu}"""
                 MEMORY = """${data.hosting."${BRANCH}".memory}"""
                 INSTANCECOUNT = """${data.hosting."${BRANCH}".instanceCount}"""
+                TARGETGROUPARN = """${data.hosting."${BRANCH}".targateGroupArn}"""
                 DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
@@ -132,7 +133,7 @@ pipeline{
                         TASKREVISION = """${registerTask.taskDefinition.revision}"""
                         TASKNAME = """${registerTask.taskDefinition.family}"""
                         sh """
-                           aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" > servicedef.json
+                           aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" --load-balancers targetGroupArn=${TARGETGROUPARN},containerName=${JOB_BASE_NAME},containerPort=${DOCKERPORT} > servicedef.json
                         """
                         def serviceDef = readJSON file:'servicedef.json'
               }
