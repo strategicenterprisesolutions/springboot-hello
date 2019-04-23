@@ -136,15 +136,15 @@ pipeline{
     stage ('Deploy to ECS'){
           steps{
               script{
-                    sh """
-                       aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json
-                       cat registertask.json | jq -r .taskDefinition.revision
-                    """
+                  REGISTER_TASK = sh (
+                                            script: 'aws ecs register-task-definition --cli-input-json file://./fargate.json',
+                                            returnStdout: true
+                  ).trim()
+                  echo "Task: ${REGISTER_TASK}"
+                  
               }
           }
     }
-                
-                
                 
     stage ('Validate endpoint'){
           steps{
