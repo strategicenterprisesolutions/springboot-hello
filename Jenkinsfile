@@ -122,20 +122,19 @@ pipeline{
             script{
               println "ENV: ${JOBENV}"
               withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerpwd', usernameVariable: '_DOCKERUSER', passwordVariable: '_DOCKERPWD']]) {
-              sh """
+                    sh """
                             docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
                             docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true                          
                             docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
-                            docker rmi ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${OLDBUILD} || true
-                            
-                            taskdef=$(aws ecs register-task-definition --cli-input-json file://${WORKSPACE}/fargate.json)
-                            taskname=$(echo $taskdef | jq -r .taskDefinition.family)
-                            taskrevision=$(echo $taskdef | jq .taskDefinition.revision)
-
-                            servicedef=$(aws ecs create-service --cluster fargate-geaviation --service-name ${taskname}-service --task-definition "$taskname:$taskrevision" --desired-count 3 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-05843a532c2fb750f,subnet-0a40f91ea5dbdc990,subnet-0a9098260113ad98e],securityGroups=[sg-0329297695727eb33]}")
-                                
+                            docker rmi ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${OLDBUILD} || true                                
+                    """
+              }
+              sh """
+                    taskdef=$(aws ecs register-task-definition --cli-input-json file://${WORKSPACE}/fargate.json)
+                    taskname=$(echo $taskdef | jq -r .taskDefinition.family)
+                    taskrevision=$(echo $taskdef | jq .taskDefinition.revision)
+                    servicedef=$(aws ecs create-service --cluster fargate-geaviation --service-name ${taskname}-service --task-definition "$taskname:$taskrevision" --desired-count 3 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-05843a532c2fb750f,subnet-0a40f91ea5dbdc990,subnet-0a9098260113ad98e],securityGroups=[sg-0329297695727eb33]}")
               """
-                        }
             } 
         }
     }
