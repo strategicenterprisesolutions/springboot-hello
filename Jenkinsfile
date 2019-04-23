@@ -101,7 +101,7 @@ pipeline{
         steps{
             script{
                     println "ENV: ${JOBENV}"
-                    wrap([$class: 'ConfigFileBuildWrapper', managedFiles: [[fileId: 'ECS-TaskDefinition', targetLocation: '', variable: 'TASK_DEFINITION']]]) {
+                    wrap([$class: 'ConfigFileBuildWrapper', managedFiles: [[fileId: 'd38018d9-0e8b-440d-8f9d-478b2cf5d2e1', targetLocation: '', variable: 'TASK_DEFINITION']]]) {
                         sh "cat ${env.TASK_DEFINITION}"
                     }
                 
