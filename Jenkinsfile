@@ -80,7 +80,7 @@ pipeline{
           }
     }
         
-    stage('Sonarqube'){
+    stage('Sonarqube code analysis'){
           steps{
           	script{
           			def scannerHome = tool 'sonarqube'
@@ -118,6 +118,7 @@ pipeline{
                         sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g ${env.TASK_DEFINITION}"
                         sh "sed -i s/#HOSTPORT#/${DOCKERPORT}/g ${env.TASK_DEFINITION}"
                         sh "sed -i s_#DOCKERIMAGEURI#_${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}_ ${env.TASK_DEFINITION}"
+                        sh "sed -i s/#ACCOUNTID#/${ACCOUNTID}/g ${env.TASK_DEFINITION}"
                         sh "cp ${env.TASK_DEFINITION} fargate.json"
                         sh "cat fargate.json"
                     }
@@ -125,22 +126,6 @@ pipeline{
         }
     } 
 
-  // stage('Deploy docker image'){          
-  //        steps{
-  //          script{
-  //            println "ENV: ${JOBENV}"
-  //            withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dockerpwd', usernameVariable: '_DOCKERUSER', passwordVariable: '_DOCKERPWD']]) {
-  //                 sh """
-  //                          docker login -u $_DOCKERUSER -p $_DOCKERPWD ${DOCKERREPO} && docker pull ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
-  //                         docker stop ${JOB_BASE_NAME} || true && docker rm ${JOB_BASE_NAME} || true
-  //                          docker run -d --name ${JOB_BASE_NAME} --restart always -p ${HOSTPORT}:${DOCKERPORT} ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}
-  //                          docker rmi ${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${OLDBUILD} || true
-  //                  """
-  //            }
-  //          } 
-  //        }
-  //  }
-  
     stage ('Deploy to ECS'){
           steps{
               script{
@@ -148,11 +133,6 @@ pipeline{
                         def registerTask = readJSON file:'registertask.json'
                         TASKREVISION = """${registerTask.taskDefinition.revision}"""
                         TASKNAME = """${registerTask.taskDefinition.family}"""
-                        println registerTask
-                        println TASKREVISION
-                        println ACCOUNTID
-                        println SUBNETS
-                        println SECURITYGROUPS
                         sh """
                            aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" > servicedef.json
                         """
