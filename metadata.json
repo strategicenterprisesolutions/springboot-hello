@@ -67,26 +67,26 @@
 		"feature": {
 			"USESWAGGER": true,
 			"SERVICEURL": "springboot.olb.cloud",
-          	"validationURL": "https://my.dreamflight.cloud/greeting",
-			"validationSleep": "15"
+          		"validationURL": "https://my.dreamflight.cloud/greeting",
+			"validationSleep": "45"
 		},
 		"develop": {
 			"USESWAGGER": true,
 			"SERVICEURL": "springboot.olb.cloud",
-          	"validationURL": "https://my.dreamflight.cloud/greeting",
-			"validationSleep": "15"
+          		"validationURL": "https://my.dreamflight.cloud/greeting",
+			"validationSleep": "45"
 		},
 		"release": {
 			"USESWAGGER": true,
 			"SERVICEURL": "springboot.olb.cloud",
-          	"validationURL": "https://my.dreamflight.cloud/greeting",
-			"validationSleep": "15"
+          		"validationURL": "https://my.dreamflight.cloud/greeting",
+			"validationSleep": "45"
 		},
 		"master": {
 			"USESWAGGER": false,
 			"SERVICEURL": "springboot.olb.cloud",
-          	"validationURL": "https://my.dreamflight.cloud/greeting",
-			"validationSleep": "15"
+          		"validationURL": "https://my.dreamflight.cloud/greeting",
+			"validationSleep": "45"
 		}
 	}
 }
