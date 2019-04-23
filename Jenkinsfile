@@ -110,8 +110,8 @@ pipeline{
                         sh "sed -i s/#DOCKERPORT#/${DOCKERPORT}/g ${env.TASK_DEFINITION}"
                         sh "sed -i s/#HOSTPORT#/${DOCKERPORT}/g ${env.TASK_DEFINITION}"
                         sh "sed -i s_#DOCKERIMAGEURI#_${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}_ ${env.TASK_DEFINITION}"
-                        sh "cat ${env.TASK_DEFINITION}"
                         sh "cp ${env.TASK_DEFINITION} fargate.json"
+                        sh "cat fargate.json"
                     }
             }
         }
@@ -133,6 +133,20 @@ pipeline{
           }
     }
   
+    stage ('Validate endpoint'){
+          steps{
+            script{
+                    sh """
+                    taskdef=$(aws ecs register-task-definition --cli-input-json file://${WORKSPACE}/fargate.json)
+                    
+                    
+                    """
+            }
+          }
+    }
+                
+                
+                
     stage ('Validate endpoint'){
           steps{
             script{
