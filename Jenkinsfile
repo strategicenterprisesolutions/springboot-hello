@@ -138,8 +138,7 @@ pipeline{
             script{
                     sh """
                     export taskdef=\$(aws ecs register-task-definition --cli-input-json file://./fargate.json)
-                    export taskname=\$(echo $taskdef | jq -r .taskDefinition.family)
-                    export taskrevision=\$(echo $taskdef | jq .taskDefinition.revision)
+                      env
                     """
             }
           }
