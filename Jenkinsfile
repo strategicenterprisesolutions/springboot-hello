@@ -46,7 +46,6 @@ pipeline{
                 sh "set +x && sed -i s/#DBPW#/${DBPW}/g ./src/main/resources/db-config.properties"
                 sh "sed -i s/#USESWAGGER#/${USESWAGGER}/g ./src/main/resources/application.properties"
                 sh "sed -i s/#SIGNUPAUTH#/${SIGNUPAUTH}/g ./src/main/resources/application.properties"
-                
                 withAWSParameterStore(credentialsId: 'awscreds', naming: 'relative', path: '/jenkins/fargate/', recursive: true, regionName: 'us-east-1') {
                     ACCOUNTID = "${ACCOUNTID}"
                 }
@@ -144,9 +143,14 @@ pipeline{
                         sh "aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json"
                         def registerTask = readJSON file:'registertask.json'
                         TASKREVISION = """${registerTask.taskDefinition.revision}"""
-                        TASKFAMILY = """${registerTask.taskDefinition.family}"""
+                        TASKNAME = """${registerTask.taskDefinition.family}"""
                         println registerTask
-                        println TASKREVISION   
+                        println TASKREVISION
+                        println ACCOUNTID
+                        sh """
+                           aws ecs create-service --cluster fargate-geaviation --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count 3 --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[subnet-05843a532c2fb750f,subnet-0a40f91ea5dbdc990,subnet-0a9098260113ad98e],securityGroups=[sg-0329297695727eb33]}" > servicedef.json
+                        """
+                        def serviceDef = readJSON file:'servicedef.json'
               }
           }
     }
