@@ -110,7 +110,6 @@ pipeline{
     stage('Construct ECS task definition'){
         steps{
             script{
-                    println "ENV: ${JOBENV}"
                     wrap([$class: 'ConfigFileBuildWrapper', managedFiles: [[fileId: 'd38018d9-0e8b-440d-8f9d-478b2cf5d2e1', targetLocation: '', variable: 'TASK_DEFINITION']]]) {
                         sh "sed -i s/#JOB_BASE_NAME#/${JOB_BASE_NAME}/g ${env.TASK_DEFINITION}"
                         sh "sed -i s/#CPU#/${CPU}/g ${env.TASK_DEFINITION}"
@@ -125,21 +124,21 @@ pipeline{
         }
     } 
 
-    stage ('Deploy to ECS'){
+    stage ('Instantiate Service on Fargate'){
           steps{
               script{
-                        sh "aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json"
+                        sh "set +x && aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json"
                         def registerTask = readJSON file:'registertask.json'
                         TASKREVISION = """${registerTask.taskDefinition.revision}"""
                         TASKNAME = """${registerTask.taskDefinition.family}"""
-                        sh "aws ecs describe-services --cluster ${CLUSTER} --services ${TASKNAME}-service > servicestatus.json"
+                        sh "set +x && aws ecs describe-services --cluster ${CLUSTER} --services ${TASKNAME}-service > servicestatus.json"
                         def serviceStatus = readJSON file:'servicestatus.json'
                         SERVICESTATUS = """${serviceStatus.services.status}"""
                         println SERVICESTATUS
                         if ("${SERVICESTATUS}" == "[ACTIVE]") {
                             sh """set +x && aws ecs update-service --cluster ${CLUSTER} --service ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" > servicedef.json"""
                         } else {
-                            sh """aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" --load-balancers targetGroupArn=${TARGETGROUPARN},containerName=${JOB_BASE_NAME},containerPort=${DOCKERPORT} > servicedef.json"""
+                            sh """set +x && aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" --load-balancers targetGroupArn=${TARGETGROUPARN},containerName=${JOB_BASE_NAME},containerPort=${DOCKERPORT} > servicedef.json"""
                             println "Waiting for new Service to instantiate..."
                             VALIDATIONSLEEP = (VALIDATIONSLEEP as int) + 100
                         }
