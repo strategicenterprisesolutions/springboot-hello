@@ -101,6 +101,10 @@ pipeline{
         steps{
             script{
                     println "ENV: ${JOBENV}"
+                    configFileProvider([configFile(fileId: 'ECS-TaskDefinition', variable: 'TASK_DEFINITION')]) {
+                        sh 'cat $TASK_DEFINITION'
+                    }
+                
                     //{
                         //"executionRoleArn": "arn:aws:iam::##account_ID##:role/ecsTaskExecutionRole",
                         //"containerDefinitions": [{
