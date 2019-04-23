@@ -137,7 +137,7 @@ pipeline{
           steps{
             script{
                     sh """
-                    taskdef=$(aws ecs register-task-definition --cli-input-json file://${WORKSPACE}/fargate.json)
+                    export taskdef=$(aws ecs register-task-definition --cli-input-json file://./fargate.json)
                     
                     
                     """
