@@ -48,7 +48,7 @@ pipeline{
                 sh "sed -i s/#SIGNUPAUTH#/${SIGNUPAUTH}/g ./src/main/resources/application.properties"
                 
                 withAWSParameterStore(credentialsId: 'awscreds', naming: 'relative', path: '/jenkins/fargate/', recursive: true, regionName: 'us-east-1') {
-                        sh "echo $ACCOUNTID"
+                    ACCOUNTID = "${ACCOUNTID}"
                 }
                 
             }
@@ -141,13 +141,16 @@ pipeline{
     stage ('Deploy to ECS'){
           steps{
               script{
-                  REGISTER_TASK = sh (
-                                            script: 'aws ecs register-task-definition --cli-input-json file://./fargate.json',
-                                            returnStdout: true
-                  ).trim()
-                  sh """
-                        echo "$REGISTER_TASK" | jq -r .taskDefinition.revision
-                  """
+                        sh "aws ecs register-task-definition --cli-input-json file://./fargate.json > registertask.json"
+                        def registerTask = readJSON file:'registertask.json'
+                        TASKREVISION = """${registerTask.taskDefinition.revision}"""
+                        println TASKREVISION
+                  
+                  //REGISTER_TASK = sh (
+                  //                          script: 'aws ecs register-task-definition --cli-input-json file://./fargate.json',
+                  //                          returnStdout: true
+                  //).trim()
+                  
               }
           }
     }
