@@ -103,7 +103,8 @@ pipeline{
                     println "ENV: ${JOBENV}"
                     wrap([$class: 'ConfigFileBuildWrapper', managedFiles: [[fileId: 'd38018d9-0e8b-440d-8f9d-478b2cf5d2e1', targetLocation: '', variable: 'TASK_DEFINITION']]]) {
                         sh "sed -i s/#JOB_BASE_NAME#/${JOB_BASE_NAME}/g ${env.TASK_DEFINITION}"
-                        sh "sed -i s/#DOCKERIMAGEURI#/${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}/g ${env.TASK_DEFINITION}"
+                        sh "sed -i s_#DOCKERIMAGEURI#_${DOCKERREPO}/${BRANCH}/${JOB_BASE_NAME}:${BUILD_ID}_ ${env.TASK_DEFINITION}"
+                        sed "s#2/3#X#"
                         sh "cat ${env.TASK_DEFINITION}"
                     }
                 
