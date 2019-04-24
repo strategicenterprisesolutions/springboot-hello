@@ -134,10 +134,16 @@ pipeline{
                         sh "set +x && aws ecs describe-services --cluster ${CLUSTER} --services ${TASKNAME}-service > servicestatus.json"
                         def serviceStatus = readJSON file:'servicestatus.json'
                         SERVICESTATUS = """${serviceStatus.services.status}"""
-                        println SERVICESTATUS
+                        println ("ServiceStatus: " + SERVICESTATUS)
                         if ("${SERVICESTATUS}" == "[ACTIVE]") {
+                            println "Existing service found, updating task definition"
                             sh """set +x && aws ecs update-service --cluster ${CLUSTER} --service ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" > servicedef.json"""
                         } else {
+                            if ("${SERVICESTATUS}" == "[DRAINING]") {
+                                 println "Existing service draining, waiting on completition..."
+                                 sleep(time:15,unit:"SECONDS")
+                                 println "..continuing"
+                            }
                             sh """set +x && aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" --load-balancers targetGroupArn=${TARGETGROUPARN},containerName=${JOB_BASE_NAME},containerPort=${DOCKERPORT} > servicedef.json"""
                             println "Waiting for new Service to instantiate..."
                             VALIDATIONSLEEP = (VALIDATIONSLEEP as int) + 100
