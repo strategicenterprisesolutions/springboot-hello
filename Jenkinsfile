@@ -19,7 +19,6 @@ pipeline{
                 INSTANCECOUNT = """${data.hosting."${BRANCH}".instanceCount}"""
                 TARGETGROUP = """${data.hosting."${BRANCH}".targetGroup}"""
                 TAGS = """${data.hosting."${BRANCH}".tags}"""
-                DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
                 DB = """${data.'db-config.properties'."${BRANCH}".DB}"""
@@ -54,6 +53,7 @@ pipeline{
                     CLUSTER = "${CLUSTER}"
                     SUBNETS = "${SUBNETS}"
                     SECURITYGROUPS = "${SECURITYGROUPS}"
+                    DOCKERREPO = "${DOCKERREPO}"
                 }
             }
           }
