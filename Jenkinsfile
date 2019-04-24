@@ -58,7 +58,7 @@ pipeline{
           }
     }
       
-    stage('Maven build'){
+    stage('Maven build, Xray scan'){
           steps{
               script{
                     //sh '/maven/apache-maven-3.3.9/bin/mvn clean package -Dmaven.test.skip=true'
@@ -80,7 +80,7 @@ pipeline{
           }
     }
         
-    stage('Sonarqube code analysis'){
+    stage('Sonarqube analysis'){
           steps{
           	script{
           			def scannerHome = tool 'sonarqube'
