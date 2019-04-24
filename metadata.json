@@ -16,7 +16,8 @@
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "2",
-			"targetGroup": "tg-fargate-8080"
+			"targetGroup": "tg-fargate-8080",
+			"tags": "app=SPRINGBOOT,env=DEV,appid=34009209"
 		},
 		"release": {
 			"dockerPort": "8080",
