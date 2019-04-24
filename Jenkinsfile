@@ -18,6 +18,7 @@ pipeline{
                 MEMORY = """${data.hosting."${BRANCH}".memory}"""
                 INSTANCECOUNT = """${data.hosting."${BRANCH}".instanceCount}"""
                 TARGETGROUP = """${data.hosting."${BRANCH}".targetGroup}"""
+                TAGS = """${data.hosting."${BRANCH}".tags}"""
                 DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
@@ -148,11 +149,12 @@ pipeline{
                                  sleep(time:120,unit:"SECONDS")
                                  println "..continuing"
                             }
-                            sh """set +x && aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" --load-balancers targetGroupArn=${TARGETGROUPARN},containerName=${JOB_BASE_NAME},containerPort=${DOCKERPORT} > servicedef.json"""
+                            sh """set +x && aws ecs create-service --cluster ${CLUSTER} --service-name ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --launch-type "FARGATE" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" --tags ${TAGS} --propagate-tags SERVICE --load-balancers targetGroupArn=${TARGETGROUPARN},containerName=${JOB_BASE_NAME},containerPort=${DOCKERPORT} > servicedef.json"""
                             println "Waiting for new Service to instantiate..."
                             VALIDATIONSLEEP = (VALIDATIONSLEEP as int) + 90
                         }
                         def serviceDef = readJSON file:'servicedef.json'
+                        print serviceDef
               }
           }
     }
