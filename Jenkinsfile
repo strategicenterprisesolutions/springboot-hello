@@ -17,7 +17,7 @@ pipeline{
                 CPU = """${data.hosting."${BRANCH}".cpu}"""
                 MEMORY = """${data.hosting."${BRANCH}".memory}"""
                 INSTANCECOUNT = """${data.hosting."${BRANCH}".instanceCount}"""
-                TARGETGROUPARN = """${data.hosting."${BRANCH}".targetGroupArn}"""
+                TARGETGROUP = """${data.hosting."${BRANCH}".targetGroup}"""
                 DOCKERREPO = "my.dreamflight.cloud"
                 VALIDATIONURL = """${data.'application.properties'."${BRANCH}".validationURL}"""
                 VALIDATIONSLEEP = """${data.'application.properties'."${BRANCH}".validationSleep}"""
@@ -135,6 +135,10 @@ pipeline{
                         def serviceStatus = readJSON file:'servicestatus.json'
                         SERVICESTATUS = """${serviceStatus.services.status}"""
                         println ("ServiceStatus: " + SERVICESTATUS)
+                        sh "aws elbv2 describe-target-groups --names > targetgroup.json"
+                        def targetGroup = readJSON file:'targetgroup.json'
+                        TARGETGROUPARN = """${targetGroup..TargetGroups.TargetGroupArn}"""
+                        println ("TargetGroup: " + TARGETGROUPARN)
                         if ("${SERVICESTATUS}" == "[ACTIVE]") {
                             println "Existing service found, updating task definition"
                             sh """set +x && aws ecs update-service --cluster ${CLUSTER} --service ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" > servicedef.json"""
