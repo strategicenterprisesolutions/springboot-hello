@@ -141,7 +141,7 @@ pipeline{
                         println ("TargetGroup: " + TARGETGROUPARN)
                         if ("${SERVICESTATUS}" == "[ACTIVE]") {
                             println "Existing service found, updating task definition"
-                            sh """set +x && aws ecs update-service --cluster ${CLUSTER} --service ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" > servicedef.json"""
+                            sh """set +x && aws ecs update-service --cluster ${CLUSTER} --service ${TASKNAME}-service --task-definition "${TASKNAME}:${TASKREVISION}" --desired-count ${INSTANCECOUNT} --network-configuration "awsvpcConfiguration={subnets=[${SUBNETS}],securityGroups=[${SECURITYGROUPS}]}" > servicedef.json"""
                         } else {
                             if ("${SERVICESTATUS}" == "[DRAINING]") {
                                  println "Existing service draining, waiting on completition..."
