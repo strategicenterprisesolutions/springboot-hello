@@ -137,7 +137,7 @@ pipeline{
                         println ("ServiceStatus: " + SERVICESTATUS)
                         sh "aws elbv2 describe-target-groups --names ${TARGETGROUP} > targetgroup.json"
                         def targetGroup = readJSON file:'targetgroup.json'
-                        TARGETGROUPARN = """${targetGroup..TargetGroups.TargetGroupArn}"""
+                        TARGETGROUPARN = """${targetGroup.TargetGroups.TargetGroupArn}"""
                         println ("TargetGroup: " + TARGETGROUPARN)
                         if ("${SERVICESTATUS}" == "[ACTIVE]") {
                             println "Existing service found, updating task definition"
