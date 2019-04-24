@@ -7,7 +7,7 @@
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "3",
-			"targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:416959564364:targetgroup/tg-fargate-8080/5f81cc98bb16b646"
+			"targetGroup": "tg-fargate-8080"
 		},
 		"develop": {
 			"dockerPort": "8080",
@@ -16,7 +16,7 @@
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "3",
-			"targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:416959564364:targetgroup/tg-fargate-8080/5f81cc98bb16b646"
+			"targetGroup": "tg-fargate-8080"
 		},
 		"release": {
 			"dockerPort": "8080",
@@ -25,7 +25,7 @@
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "3",
-			"targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:416959564364:targetgroup/tg-fargate-8080/5f81cc98bb16b646"
+			"targetGroup": "tg-fargate-8080"
 		},
 		"master": {
 			"dockerPort": "8080",
@@ -34,7 +34,7 @@
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "3",
-			"targetGroupArn": "arn:aws:elasticloadbalancing:us-east-1:416959564364:targetgroup/tg-fargate-8080/5f81cc98bb16b646"
+			"targetGroup": "tg-fargate-8080"
 		}
 	},
   	"db-config.properties": {
