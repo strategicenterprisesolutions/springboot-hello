@@ -15,7 +15,7 @@
 			"dockerHost": "10.101.101.170",
 			"cpu": "512",
 			"memory": "1024",
-			"instanceCount": "3",
+			"instanceCount": "2",
 			"targetGroup": "tg-fargate-8080"
 		},
 		"release": {
