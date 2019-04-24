@@ -135,7 +135,7 @@ pipeline{
                         def serviceStatus = readJSON file:'servicestatus.json'
                         SERVICESTATUS = """${serviceStatus.services.status}"""
                         println ("ServiceStatus: " + SERVICESTATUS)
-                        sh "aws elbv2 describe-target-groups --names > targetgroup.json"
+                        sh "aws elbv2 describe-target-groups --names ${TARGETGROUP} > targetgroup.json"
                         def targetGroup = readJSON file:'targetgroup.json'
                         TARGETGROUPARN = """${targetGroup..TargetGroups.TargetGroupArn}"""
                         println ("TargetGroup: " + TARGETGROUPARN)
