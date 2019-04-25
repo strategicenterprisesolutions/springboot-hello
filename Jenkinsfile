@@ -9,6 +9,8 @@ pipeline{
           steps{
             script{
                 BRANCH = "${BRANCHES}".tokenize('/')[-1]
+                println "Commit: " + COMMIT
+                println "Branch: " + BRANCH
                 def data = readJSON file:'metadata.json'
                 def datas = readYaml file: 'metadata.yml'
                 DOCKERHOST = """${data.hosting."${BRANCH}".dockerHost}"""
