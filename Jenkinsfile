@@ -85,9 +85,9 @@ pipeline{
                     //env.JAVA_HOME = 'path to JDK'
                     def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'clean package -Dmaven.test.skip=true'
                     server.publishBuildInfo buildInfo
-                    //def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
-                    //def scanResult = server.xrayScan scanConfig
-                    //echo scanResult as String
+                    def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
+                    def scanResult = server.xrayScan scanConfig
+                    echo scanResult as String
               }
           }
     }
