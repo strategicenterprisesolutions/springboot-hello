@@ -88,6 +88,8 @@ pipeline{
                     def scanConfig = ['buildName': buildInfo.name, 'buildNumber': buildInfo.number, 'failBuild': false]
                     def scanResult = server.xrayScan scanConfig
                     echo scanResult as String
+                    def xrayresult = readJSON text:scanResult
+                    println """${xrayresult.summary.fail_build}"""
               }
           }
     }
