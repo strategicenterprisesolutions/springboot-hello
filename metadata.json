@@ -13,7 +13,7 @@
 			"hostPort": "50101",
 			"cpu": "512",
 			"memory": "1024",
-			"instanceCount": "2",
+			"instanceCount": "1",
 			"targetGroup": "tg-fargate-8080",
 			"tags": "key=app,value=SPRINGBOOT"
 		},
