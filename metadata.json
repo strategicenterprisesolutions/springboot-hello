@@ -28,8 +28,8 @@
 		"master": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"cpu": "512",
-			"memory": "1024",
+			"cpu": "1024",
+			"memory": "2048",
 			"instanceCount": "3",
 			"targetGroup": "tg-fargate-8080"
 		}
