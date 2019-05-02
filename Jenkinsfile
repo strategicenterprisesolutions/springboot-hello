@@ -59,7 +59,17 @@ pipeline{
             }
           }
     }
-      
+    stage('Sonarqube analysis'){
+        steps{
+            script{
+          			def scannerHome = tool 'sonarqube'
+                	withSonarQubeEnv('sonarqube') {
+                    	sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${JOB_BASE_NAME} -Dsonar.sources='.' -Dsonar.java.binaries='.' -Dsonar.exclusions='target/**/*' -Dsonar.projectVersion=${JOBENV}.${BUILD_ID} -Dsonar.branch=${BRANCH} "
+                	}
+           }
+        }
+    }
+        
     stage('Maven build, Xray scan'){
           steps{
               script{
@@ -82,15 +92,18 @@ pipeline{
           }
     }
         
-    stage('Sonarqube analysis'){
-          steps{
-          	script{
-          			def scannerHome = tool 'sonarqube'
-                	withSonarQubeEnv('sonarqube') {
-                    	sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${JOB_BASE_NAME} -Dsonar.sources='.' -Dsonar.java.binaries='.' -Dsonar.exclusions='target/**/*' -Dsonar.projectVersion=${JOBENV}.${BUILD_ID} -Dsonar.branch=${BRANCH} "
-                	}
-           }
-         }
+    stage("SonarQube GateCheck"){
+        steps{
+            script{
+                    sleep 5
+                    timeout(time: 1, unit: 'MINUTES') { // Just in case something goes wrong, pipeline will be killed after a timeout
+                        def qg = waitForQualityGate() // Reuse taskId previously collected by withSonarQubeEnv
+                        if (qg.status != 'OK') {
+                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
+                        }
+                    }
+            }
+        }
     }
         
     stage('Build docker image'){
