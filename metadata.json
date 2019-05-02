@@ -3,7 +3,6 @@
 		"feature": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170",
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "3",
@@ -12,7 +11,6 @@
 		"develop": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170",
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "2",
@@ -22,7 +20,6 @@
 		"release": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170",
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "3",
@@ -31,7 +28,6 @@
 		"master": {
 			"dockerPort": "8080",
 			"hostPort": "50101",
-			"dockerHost": "10.101.101.170",
 			"cpu": "512",
 			"memory": "1024",
 			"instanceCount": "3",
